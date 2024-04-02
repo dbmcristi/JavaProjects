@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c6af1e7b-6d57-4cfb-b5ba-11403642e3d9" name="Changes" comment="Add readMe file" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="Use Maven wrapper" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2ZSXARCCr9vyImCTkHAxgi9KDzG" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/FACULTATE_23-24/mpp23-24/gitClones/mpp-proiect-java-dbmcristi&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;sqlite&quot;
+    ]
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\FACULTATE_23-24\MetodeAvansateDeProgramare\GitClones\a4-fx-dbmcristi\src\main\resources" />
+      <recent name="D:\FACULTATE_23-24\MetodeAvansateDeProgramare\GitClones\a4-fx-dbmcristi" />
+      <recent name="D:\FACULTATE_23-24\MetodeAvansateDeProgramare\GitClones\a4-fx-dbmcristi\src\main\java" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c6af1e7b-6d57-4cfb-b5ba-11403642e3d9" name="Changes" comment="" />
+      <created>1702416313901</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1702416313901</updated>
+      <workItem from="1702416314947" duration="4921000" />
+      <workItem from="1709918211183" duration="251000" />
+      <workItem from="1710151477616" duration="724000" />
+      <workItem from="1710154346941" duration="1830000" />
+      <workItem from="1710170251935" duration="2441000" />
+      <workItem from="1710184455868" duration="30000" />
+      <workItem from="1710273217778" duration="687000" />
+      <workItem from="1710347973295" duration="1871000" />
+      <workItem from="1710403677176" duration="1840000" />
+      <workItem from="1710703374254" duration="1247000" />
+      <workItem from="1711385093485" duration="6858000" />
+      <workItem from="1711468967953" duration="316000" />
+      <workItem from="1711469333564" duration="670000" />
+      <workItem from="1711649510744" duration="597000" />
+      <workItem from="1711654855309" duration="1315000" />
+      <workItem from="1711734291380" duration="1023000" />
+      <workItem from="1712081726578" duration="66000" />
+      <workItem from="1712082963492" duration="224000" />
+      <workItem from="1712083475417" duration="353000" />
+    </task>
+    <task id="LOCAL-00001" summary="Add readMe file">
+      <option name="closed" value="true" />
+      <created>1712083547155</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1712083547155</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Add readMe file" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add readMe file" />
+  </component>
+</project>
