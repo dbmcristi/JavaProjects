@@ -1,4 +1,0 @@
-1 BMW 325i
-2 BMW 320i
-3 MAZDA Miata
-4 TOYOTA Celica
