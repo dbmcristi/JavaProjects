@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Quick Start - Leaflet</title>
+
+    <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico"/>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css"/>
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        html, body, #map {
+            height: 100%;
+            width: 100%;
+        }
+
+
+        img.redColor {
+            filter: hue-rotate(100deg);
+        }
+
+        img.redColor2 {
+            filter: hue-rotate(130deg);
+        }
+
+        img.yellowColor {
+            filter: hue-rotate(200deg);
+        }
+
+        img.roadClosedColor {
+            filter: hue-rotate(50deg);
+        }
+
+        img.accidentColor {
+            filter: hue-rotate(10deg);
+        }
+
+        .my-text {
+            color: red;
+        }
+
+        #leftbox {
+            float: left;
+            background: white;
+            width: 20%;
+            height: 280px;
+            margin-left: 10px;
+
+        }
+
+        #middlebox {
+            float: left;
+            background: white;
+            width: 20%;
+            height: 280px;
+        }
+
+        #rightbox {
+            float: left;
+            background: white;
+            width: 50%;
+            height: 280px;
+        }
+
+    </style>
+
+
+</head>
+<body>
+<div id="map">
+</div>
+<div id="boxes">
+    <div id="leftbox">
+        <form action="http://192.168.100.53:8080/mvc/filter" method="GET">
+            <p>Please enter start-date and end-date:</p>
+            <p>start date: <input type="date" name="startDate" pattern="\d{4}-\d{2}-\d{2}"></p>
+            <p>end date: <input type="date" name="endDate" pattern="\d{4}-\d{2}-\d{2}"></p>
+            <p>
+                <button type="submit">Search</button>
+            </p>
+        </form>
+    </div>
+    <div id="middlebox">
+        <form action="http://192.168.100.53:8080/mvc/import" method="GET">
+            <p>Import from waze:</p>
+            <p>
+                <button type="submit">Import</button>
+            </p>
+        </form>
+    </div>
+
+    <div id="rightbox">
+        <form action="#" th:action="@{/mvc/eta}" th:object="${etaDto}" method="post">
+            <p>Please enter ETA:</p>
+
+            <p>type:
+                <!--input type="text" th:field="${etaDto.type}" placeholder="type"/-->
+                <select name="type" th:field="${etaDto.type}">
+                    <option value="HAZARD">HAZARD</option>
+                    <option value="ACCIDENT">ACCIDENT</option>
+                    <option value="ROAD_CLOSED">ROAD_CLOSED</option>
+                </select>
+            </p>
+            <p>subtype: <input type="text" th:field="${etaDto.subtype}" placeholder="subtype" size="40"/></p>
+            <p>latitude: <input type="text" th:field="${etaDto.location.y}" placeholder="latitude"/></p>
+            <p>longitude: <input type="text" th:field="${etaDto.location.x}" placeholder="longitude/"></p>
+            <p>date: <input type="date" th:field="${etaDto.date}" pattern="\d{4}-\d{2}-\d{2}"/></p>
+            <p>
+                <button type="submit">Add ETA</button>
+            </p>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    function RepresentationDto(latitude, longitude, message, eta) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.message = message;
+        this.eta = eta;
+    }
+
+    function checkTypeAndMakeMarker(latitude, longitude, message) {
+        if (message.includes("HAZARD")) {
+            makeMarker(latitude, longitude, text + latitude + SEP + longitude, "yellow")
+        }
+        if (message.includes("JAM")) {
+            makeMarker(latitude, longitude, text, "red")
+        }
+        if (message.includes("ACCIDENT")) {
+            makeMarker(latitude, longitude, text + latitude + SEP + longitude, "green")
+        }
+        if (message.includes("CLOSED")) {
+            makeMarker(latitude, longitude, text + latitude + SEP + longitude, "grey")
+        }
+    }
+
+    function haversineDistance(lat1, lon1, lat2, lon2) {
+        const toRadians = degrees => degrees * Math.PI / 180;
+        const R = 6371; // Radius of the Earth in kilometers
+        const dLat = toRadians(lat2 - lat1);
+        const dLon = toRadians(lon2 - lon1);
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c; // Distance in kilometers
+    }
+
+    function verifyIfExistsInList(elem, list) {
+        /*
+        * TRUE : if exists
+        * FALSE : if not exists
+        * */
+        if (elem) {
+            for (var j in list) {
+                if (elem[0] === list[j][0] && elem[1] === list[j][1]) {
+                    console.log("(IF)END verifyIfExistsInList (true), " + elem);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    function sortLocations(locations, refLat, refLon) {
+        return locations.sort((a, b) => {
+            const distA = haversineDistance(refLat, refLon, a[0], a[1]);
+            const distB = haversineDistance(refLat, refLon, b[0], b[1]);
+            return distA - distB;
+        });
+    }
+
+    function cloneArray(arrayElements) {
+        var myArray = [];
+        for (i in arrayElements) {
+            myArray.push(arrayElements.at(i));
+        }
+        return myArray;
+    }
+
+    function makeMarker(latitude, longitude, txt, color) {
+        var greenIcon = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-' + color + '.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+        L.marker([latitude, longitude], {icon: greenIcon}).addTo(map).bindPopup(txt)
+            .openPopup();
+    }
+
+    function mySplit(myArray, i) {
+        var item1 = myArray[i].replace("(", "");
+        var item2 = item1.replace(")", "");
+        return item2.split(",");
+    }
+
+    function checkMessageJAM(message) {
+        return !(message.includes("JAM") || message.includes("HAZARD") || message.includes("CLOSED")) || message.includes("ACCIDENT")
+    }
+
+    function checkMessageCLOSED(message) {
+        return message.includes("CLOSED");
+    }
+
+    function checkMessage(message, type) {
+        if (type === "TRAFFIC") {
+            return checkMessageJAM(message);
+        }
+        if (type === "CLOSED") {
+            return checkMessageCLOSED(message);
+        }
+        return false;
+
+    }
+
+    function getElements(array, type) {
+        /*
+        *   type = "TRAFFIC" / "CLOSED"
+        * */
+        var jams = [];
+        var len = array.length;
+        for (var i = 1; i < len; i++) {
+            if (array[i] === "") {
+            } else {
+                var elements = mySplit(array, i);
+                var latitude = elements[0];
+                var longitude = elements[1];
+                var message = elements[2];
+                if (checkMessage(message, type) === true) {
+                    // console.log(i + SEP + latitude + SEP + longitude + SEP + message);
+                    jams.push([latitude, longitude, message]);
+                } else {
+                    // console.log("--ELSE--" + i + SEP + latitude + SEP + longitude + message);
+                }
+            }
+        }
+        return jams;
+    }
+
+    function getUniqueElem(myArray, type) {
+        var allJams = [];
+        var allClosedRoads = [];
+        var result = [];
+        if (type === "TRAFFIC") {
+            allJams = getElements(myArray10, "TRAFFIC");
+            allClosedRoads = getElements(myArray11, "CLOSED");
+            result = [];
+            for (var i = 0; i < allJams.length; i++) {
+                if (verifyIfExistsInList(allJams[i], allClosedRoads) === false) {
+                    result.push(allJams[i]);
+                }
+            }
+            return result;
+        }
+        if (type === "CLOSED") {
+            allJams = getElements(myArray20, "TRAFFIC");
+            allClosedRoads = getElements(myArray21, "CLOSED");
+            console.log("allClosedRoads");
+            console.log(allClosedRoads);
+            result = [];
+            for (var j = 0; j < allJams.length; j++) {
+                // if (verifyIfExistsInList(allClosedRoads[j], allJams) === false) {
+                result.push(allClosedRoads[j]);
+                // }
+            }
+            return result;
+        }
+        return null;
+    }
+
+    function makePolylineJams(myArray, color) {
+        var type = "TRAFFIC";
+        var jams = [];
+        var mypolyline;
+        var smallJams = [];
+        var latLong = [];
+        jams = getUniqueElem(myArray, type)
+        var lenJam = jams.length;
+        for (var i = 1; i < lenJam; i++) {
+            if (jams[i][2] === jams[i - 1][2]) {
+                latLong = [jams[i][0], jams[i][1], jams[i][2]];
+                smallJams.push(latLong)
+            } else {
+                smallJams.push(latLong);
+                mypolyline = L.polyline(smallJams).setStyle({
+                    color: color
+                }).addTo(map);
+                smallJams = [];
+            }
+        }
+        mypolyline = L.polyline(smallJams).setStyle({
+            color: color
+        }).addTo(map);
+    }
+
+    function makePolylineClosedRoads(myArray, color) {
+        var type = "CLOSED";
+        var roads = [];
+        var mypolyline;
+        roads = getUniqueElem(myArray, "CLOSED");
+        var lenJam = roads.length;
+        var smallRoads = [];
+        var latLong = [];
+        roads.sort((a, b) => {
+            if (a[2] < b[2]) return -1;
+            if (a[2] > b[2]) return 1;
+            return 0;
+        });
+        // console.log(roads);
+        for (var i = 1; i < lenJam; i++) {
+            if (roads[i]) {
+                if (roads[i][2] === roads[i - 1][2] && roads[i][2].includes("CLOSED") === true) {
+                    latLong = [roads[i][0], roads[i][1]];
+                    console.log(i + SEP + roads[i]);
+                    smallRoads.push(latLong)
+                } else {
+                    console.log(i + ". ELSE" + SEP + roads[i]);
+
+                    smallRoads.push(latLong);
+                    mypolyline = L.polyline(smallRoads).setStyle({
+                        color: color
+                    }).addTo(map);
+                    smallRoads = [];
+                }
+            }
+        }
+        mypolyline = L.polyline(smallRoads).setStyle({
+            color: color
+        }).addTo(map);
+    }
+
+    const map = L.map('map').setView([100000000, 100000000], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+    }).addTo(map);
+
+    let rep1 = "[[${representations}]]";
+    var rep2 = rep1.replace("[", "");
+    var rep3 = rep2.replace("]", "");
+    var SEP = ", ";
+    var arrayElements = rep3.split("RepresentationDto");
+    var myArray = cloneArray(arrayElements);    //used for popUps
+    var myArray2 = cloneArray(arrayElements);//used for traffic
+    var myArray3 = cloneArray(arrayElements);//used for closedRoads
+    var myArray10 = cloneArray(arrayElements);
+    var myArray11 = cloneArray(arrayElements);
+    var myArray20 = cloneArray(arrayElements);
+    var myArray21 = cloneArray(arrayElements);
+
+    var len2 = myArray2.length;
+    var len3 = myArray3.length;
+
+    var elements = [];
+    for (var i in myArray) {
+        if (myArray[i] === "") {
+        } else {
+            elements = mySplit(myArray, i);
+            var latitude = elements[0];
+            var longitude = elements[1];
+            var message = elements[2];
+            var eta = elements[3];
+            var text = message + SEP + '<p style="color:red;">' + eta + "</p>";
+            checkTypeAndMakeMarker(latitude, longitude, text);
+        }
+    }
+    makePolylineJams(myArray2, 'red');
+    makePolylineClosedRoads(myArray3, 'grey');
+
+</script>
+</body>
+</html>
